@@ -173,6 +173,11 @@ El simulador replica degradación progresiva realista:
 ## Equipo
 
 Desarrollado en la Hackathon 2026 · Santa Cruz de la Sierra, Bolivia 🇧🇴
+Franco Saavedra Leonardo 
+Mujica Vallejos Andy Mauricio 
+Condori Diaz Marilyn Esther
+Delgado Rojas Alberto Caleb 
+
 
 ---
 
