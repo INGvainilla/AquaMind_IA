@@ -4,6 +4,7 @@ Define los rangos de los sensores por estado del filtro y la configuración de
 red usada por el simulador (identificador del filtro, URL del backend e intervalo).
 """
 
+import os
 from typing import Dict
 
 # ----------------------------------------------------------------------------
@@ -36,11 +37,19 @@ SENSOR_RANGES: Dict[str, Dict[str, tuple]] = {
     },
 }
 
+# ----------------------------------------------------------------------------
+# Configuración de red del simulador.
+# Configurable por variables de entorno para poder desplegarlo (Render worker)
+# apuntando al backend en la nube. En local usa los valores por defecto.
+# ----------------------------------------------------------------------------
+
 # Identificador del filtro simulado (cooperativa de Bolivia, unidad 001).
-FILTER_ID: str = "FILTRO-BOL-001"
+FILTER_ID: str = os.getenv("FILTER_ID", "FILTRO-BOL-001")
 
 # Endpoint del backend Node.js que recibe las lecturas de los sensores.
-BACKEND_URL: str = "http://localhost:4000/api/sensors/data"
+# En producción, set BACKEND_URL a la URL del backend desplegado
+# (p. ej. https://aquamind-backend.onrender.com/api/sensors/data).
+BACKEND_URL: str = os.getenv("BACKEND_URL", "http://localhost:4000/api/sensors/data")
 
 # Segundos de espera entre cada envío de datos al backend.
-SEND_INTERVAL: int = 1
+SEND_INTERVAL: int = int(os.getenv("SEND_INTERVAL", "1"))

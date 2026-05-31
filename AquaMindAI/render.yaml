@@ -1,0 +1,74 @@
+# render.yaml
+# Blueprint de Render para desplegar AquaMind AI.
+# Despliega dos servicios web GRATIS: el backend (Node + Socket.IO) y el
+# servicio de IA (Flask). La base de datos vive en Supabase (externa) y el
+# frontend en Vercel. El simulador se documenta aparte (ver DEPLOY.md), porque
+# los background workers de Render requieren plan de pago.
+#
+# Cómo usarlo: en Render → New → Blueprint → conecta este repo. Render leerá
+# este archivo y creará los servicios. Las variables marcadas con sync:false
+# se piden en el dashboard (no se versionan, porque son secretos/URLs).
+
+services:
+  # --------------------------------------------------------------------------
+  # Backend: API REST + Socket.IO (Node.js)
+  # --------------------------------------------------------------------------
+  - type: web
+    name: aquamind-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # PORT lo inyecta Render automáticamente; no hace falta declararlo.
+
+      # Base de datos (Supabase). Secretos: se completan en el dashboard.
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+
+      # URL pública del servicio de IA (https://aquamind-ai.onrender.com).
+      # Se completa en el dashboard una vez creado el servicio de IA.
+      - key: AI_SERVICE_URL
+        sync: false
+
+      # URL del frontend en Vercel (para CORS y Socket.IO). Se completa tras
+      # desplegar el frontend (https://tu-app.vercel.app).
+      - key: FRONTEND_URL
+        sync: false
+
+      # Notificaciones por email (Gmail App Password). Secretos.
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASSWORD
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: ALERT_EMAIL
+        sync: false
+
+  # --------------------------------------------------------------------------
+  # Servicio de IA: análisis predictivo (Flask + gunicorn)
+  # 1 worker para conservar el estado en memoria del Isolation Forest.
+  # --------------------------------------------------------------------------
+  - type: web
+    name: aquamind-ai
+    runtime: python
+    plan: free
+    rootDir: ai
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn api.app:app --bind 0.0.0.0:$PORT --workers 1
+    healthCheckPath: /health
+    autoDeploy: true

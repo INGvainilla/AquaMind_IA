@@ -61,5 +61,8 @@ def health():
 
 
 if __name__ == "__main__":
-    # Servicio independiente en el puerto 5000 (debug desactivado).
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    # Puerto configurable por entorno: en local usa 5000, pero en la nube
+    # (Render, Railway, etc.) el proveedor inyecta el puerto vía $PORT.
+    # En producción se recomienda arrancar con gunicorn (ver render.yaml).
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
