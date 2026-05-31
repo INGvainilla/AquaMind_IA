@@ -173,11 +173,15 @@ El simulador replica degradación progresiva realista:
 ## Equipo
 
 Desarrollado en la Hackathon 2026 · Santa Cruz de la Sierra, Bolivia 🇧🇴
-- Franco Saavedra Leonardo 
-- Mujica Vallejos Andy Mauricio 
-- Condori Diaz Marilyn Esther
-- Delgado Rojas Alberto Caleb 
+- Franco Saavedra Leonardo                    73163416
+- Mujica Vallejos Andy Mauricio               77838805
+- Condori Diaz Marilyn Esther                 60005183
+- Delgado Rojas Alberto Caleb                 72635360
 
+
+URL:
+- VIDEO: "https://youtu.be/oD0mxLDlgdE?si=2YNTBTo3G5227sSJ"
+- DESPLIEGUE: "https://aqua-mind-ia.vercel.app/"
 
 ---
 
