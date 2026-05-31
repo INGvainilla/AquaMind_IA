@@ -1,0 +1,5 @@
+/* index.css
+   Estilos globales del frontend. Importa Tailwind CSS v4; los estilos de UI se
+   añadirán cuando se construyan los componentes visuales. */
+
+@import "tailwindcss";
