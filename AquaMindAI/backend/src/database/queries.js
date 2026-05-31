@@ -16,21 +16,42 @@ const { query } = require('../config/database');
  * @returns {Promise<Object>} La fila insertada.
  */
 async function insertSensorData(data) {
-  const sql = `
-    INSERT INTO sensor_data (filter_id, turbidity, pressure, flow_rate, temperature, status)
-    VALUES ($1, $2, $3, $4, $5, $6)
-    RETURNING *;
-  `;
-  const params = [
-    data.filter_id,
-    data.turbidity,
-    data.pressure,
-    data.flow_rate,
-    data.temperature,
-    data.status || 'NORMAL',
-  ];
-  const result = await query(sql, params);
-  return result.rows[0];
+  // 1. Insertar el nuevo registro.
+  const insertResult = await query(
+    `INSERT INTO sensor_data (filter_id, turbidity, pressure, flow_rate, temperature, status)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     RETURNING *`,
+    [
+      data.filter_id,
+      data.turbidity,
+      data.pressure,
+      data.flow_rate,
+      data.temperature,
+      data.status || 'NORMAL',
+    ]
+  );
+
+  // 2. Borrar registros viejos, conservando solo los últimos 300 por filtro.
+  //    El simulador genera 1 lectura/segundo, así que sin esto la tabla crece
+  //    sin control. El DELETE va en su propio try/catch: si falla, se loguea
+  //    pero NUNCA interrumpe el flujo de ingesta (la lectura ya quedó guardada).
+  try {
+    await query(
+      `DELETE FROM sensor_data
+       WHERE filter_id = $1
+         AND id NOT IN (
+           SELECT id FROM sensor_data
+           WHERE filter_id = $1
+           ORDER BY recorded_at DESC
+           LIMIT 300
+         )`,
+      [data.filter_id]
+    );
+  } catch (err) {
+    console.error('[queries] Error limpiando registros viejos (no crítico):', err.message);
+  }
+
+  return insertResult.rows[0];
 }
 
 /**

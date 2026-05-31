@@ -5,7 +5,7 @@
 const queries = require('../database/queries');
 const aiService = require('../services/aiService');
 const alertService = require('../services/alertService');
-const { emitSensorUpdate, emitAlert } = require('../sockets/socketManager');
+const { emitSensorUpdate } = require('../sockets/socketManager');
 
 // Campos mínimos que debe traer una lectura para considerarse válida.
 const REQUIRED_FIELDS = ['filter_id', 'turbidity', 'pressure', 'flow_rate', 'temperature'];
@@ -37,18 +37,20 @@ async function receiveSensorData(req, res, next) {
     // 3) Persistir el análisis.
     const analysis = await queries.insertAnalysis(analysisResult);
 
-    // 4) Evaluar y, si corresponde, crear una alerta.
+    // 4) Evaluar y, si corresponde, crear una alerta. Le pasamos `io` para que
+    //    el service emita 'alert:new' y dispare el correo (con cooldown) él mismo.
+    const io = req.app.get('io');
     const alert = await alertService.checkAndCreateAlerts(
       sensorData,
       analysis,
-      sensorData.filter_id
+      sensorData.filter_id,
+      io
     );
 
-    // 5) Emitir en tiempo real al frontend.
-    const io = req.app.get('io');
+    // 5) Emitir la actualización de sensores en tiempo real al frontend.
+    //    (La emisión de 'alert:new' la realiza alertService al recibir `io`.)
     if (io) {
       emitSensorUpdate(io, { sensor: sensorData, analysis });
-      if (alert) emitAlert(io, alert);
     }
 
     // 6) Responder con todo lo guardado.

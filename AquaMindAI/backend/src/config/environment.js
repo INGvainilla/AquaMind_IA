@@ -34,6 +34,24 @@ if (missing.length > 0) {
 }
 
 // ----------------------------------------------------------------------------
+// Variables opcionales de email: habilitan las notificaciones por correo. Si
+// faltan, el backend arranca igual (solo se avisa) pero no se enviarán correos.
+// ----------------------------------------------------------------------------
+const OPTIONAL_EMAIL_VARS = ['EMAIL_USER', 'EMAIL_PASSWORD', 'ALERT_EMAIL'];
+
+const missingEmail = OPTIONAL_EMAIL_VARS.filter((key) => {
+  const value = process.env[key];
+  return value === undefined || value === '';
+});
+
+if (missingEmail.length > 0) {
+  console.warn(
+    `[ENV] ⚠️ Variables de email no configuradas: ${missingEmail.join(', ')}. ` +
+      'Las notificaciones por correo estarán deshabilitadas.'
+  );
+}
+
+// ----------------------------------------------------------------------------
 // Objeto ENV centralizado: única fuente de verdad de la configuración.
 // Se aplican valores por defecto razonables a las variables no críticas.
 // ----------------------------------------------------------------------------
@@ -47,6 +65,10 @@ const ENV = {
   DB_PASSWORD: process.env.DB_PASSWORD,
   AI_SERVICE_URL: process.env.AI_SERVICE_URL || 'http://localhost:5000',
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
+  EMAIL_USER: process.env.EMAIL_USER || '',
+  EMAIL_PASSWORD: process.env.EMAIL_PASSWORD || '',
+  EMAIL_FROM: process.env.EMAIL_FROM || '',
+  ALERT_EMAIL: process.env.ALERT_EMAIL || '',
 };
 
 module.exports = { ENV };
