@@ -6,7 +6,7 @@ y la envía al backend, simulando un filtro real instalado en campo.
 
 import time
 
-from utils.constants import FILTER_ID, SEND_INTERVAL
+from utils.constants import BACKEND_URL, FILTER_ID, SEND_INTERVAL
 from simulator.sensor_generator import SensorGenerator
 from simulator.data_sender import send_to_backend
 
@@ -15,6 +15,8 @@ def main() -> None:
     """Ejecuta el loop principal del simulador hasta interrupción manual."""
     generator = SensorGenerator()
     print(f"🤖 AquaMind Simulador iniciado - enviando datos cada {SEND_INTERVAL}s")
+    print(f"   Filtro: {FILTER_ID}")
+    print(f"   Backend destino: {BACKEND_URL}")
     print("   (Ctrl+C para detener)\n")
 
     try:

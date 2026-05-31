@@ -103,6 +103,14 @@ function DashboardPage() {
   return (
     <DashboardLayout>
       <div className="space-y-4">
+        {/* Banner de modo demo: los datos provienen del simulador, no de sensores reales */}
+        <div className="flex items-center gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2">
+          <span className="text-amber-400">⚑</span>
+          <span className="text-xs font-medium uppercase tracking-wide text-amber-300">
+            Modo Demo · Datos simulados
+          </span>
+        </div>
+
         {/* Banner de error de conexión */}
         {!isConnected && (
           <div className="flex items-center gap-2 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-2.5">

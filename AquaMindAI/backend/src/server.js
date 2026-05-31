@@ -8,6 +8,7 @@ const cors = require('cors');
 const { Server } = require('socket.io');
 
 const { ENV } = require('./config/environment');
+const { query } = require('./config/database');
 const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const sensorRoutes = require('./routes/sensorRoutes');
@@ -45,6 +46,29 @@ app.use(requestLogger);
 // Rutas
 // ----------------------------------------------------------------------------
 app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
+
+// Estado del sistema: verifica la conectividad real con PostgreSQL y reporta la
+// configuración relevante. Útil para diagnosticar el entorno antes de la demo.
+app.get('/api/health', async (req, res) => {
+  let database = 'desconectada';
+  try {
+    await query('SELECT 1');
+    database = 'conectada';
+  } catch (err) {
+    database = 'desconectada';
+  }
+
+  return res.status(200).json({
+    status: 'ok',
+    service: 'AquaMind Backend',
+    uptime_seconds: Math.round(process.uptime()),
+    database,
+    ai_service_url: ENV.AI_SERVICE_URL,
+    frontend_url: ENV.FRONTEND_URL,
+    timestamp: new Date().toISOString(),
+  });
+});
+
 app.use('/api/sensors', sensorRoutes);
 app.use('/api/alerts', alertRoutes);
 
