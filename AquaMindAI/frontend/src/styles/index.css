@@ -1,5 +1,49 @@
 /* index.css
-   Estilos globales del frontend. Importa Tailwind CSS v4; los estilos de UI se
-   añadirán cuando se construyan los componentes visuales. */
+   Estilos globales del frontend. Importa Tailwind CSS v4 y define el fondo
+   oscuro base (estilo SCADA industrial) además de animaciones reutilizables. */
 
 @import "tailwindcss";
+
+/* Fondo oscuro global y tipografía base. */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: #030712; /* gray-950 */
+  color: #e5e7eb; /* gray-200 */
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Animación slide-in para alertas nuevas. */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out both;
+}
+
+/* Scrollbar discreto para paneles con scroll interno. */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #1f2937 transparent;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #1f2937; /* gray-800 */
+  border-radius: 9999px;
+}
